@@ -28,6 +28,9 @@ namespace SieveUnitTests.Services
             mapper.Property<Post>(p => p.TopComment.Id)
                 .CanSort();
 
+            mapper.Property<Post>(p => p.Title)
+                .CanSort();
+
             mapper.Property<Post>(p => p.OnlySortableViaFluentApi)
                 .CanSort();
 

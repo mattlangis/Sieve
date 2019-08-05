@@ -26,7 +26,7 @@ namespace Sieve.Extensions
                 }
             }
             
-            var propertyAccess = Expression.MakeMemberAccess(propertyValue, propertyInfo);
+            MemberExpression propertyAccess = Expression.MakeMemberAccess(propertyValue, propertyInfo);
             var orderByExpression = Expression.Lambda(propertyAccess, parameter);
             var resultExpression = Expression.Call(typeof(Queryable), command, new Type[] { type, propertyInfo.PropertyType },
                                           source.Expression, Expression.Quote(orderByExpression));

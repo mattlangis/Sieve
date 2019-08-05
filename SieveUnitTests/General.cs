@@ -372,6 +372,23 @@ namespace SieveUnitTests
         }
 
         [TestMethod]
+        public void SortingWorks()
+        {
+            var model = new SieveModel()
+            {
+                Sorts = "-Title",
+            };
+
+            var result = _processor.Apply(model, _posts);
+            Assert.AreEqual(4, result.Count());
+            var posts = result.ToList();
+            Assert.AreEqual(posts[0].Id, 3);
+            Assert.AreEqual(posts[1].Id, 2);
+            Assert.AreEqual(posts[2].Id, 1);
+            Assert.AreEqual(posts[3].Id, 0);
+        }
+
+        [TestMethod]
         public void NestedFilteringWithIdenticTypesWorks()
         {
             var model = new SieveModel()
