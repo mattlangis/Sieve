@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
@@ -169,6 +171,7 @@ namespace Sieve.Services
                 return result;
             }
 
+            var appliedCustomMethods = new List<IQueryable<TEntity>>();
             Expression outerExpression = null;
             var parameterExpression = Expression.Parameter(typeof(TEntity), "e");
             foreach (var filterTerm in model.GetFiltersParsed())
@@ -229,13 +232,12 @@ namespace Sieve.Services
                     }
                     else
                     {
-                        result = ApplyCustomMethod(result, filterTermName, _customFilterMethods, 
+                        appliedCustomMethods.Add(ApplyCustomMethod(result, filterTermName, _customFilterMethods, 
                             new object[] {
                                             result,
                                             filterTerm.Operator,
                                             filterTerm.Values
-                            }, dataForCustomMethods);
-
+                            }, dataForCustomMethods));
                     }
                 }
                 if (outerExpression == null)
@@ -249,9 +251,11 @@ namespace Sieve.Services
                 }
                 outerExpression = Expression.And(outerExpression, innerExpression);
             }
-            return outerExpression == null
+            result = outerExpression == null
                 ? result
                 : result.Where(Expression.Lambda<Func<TEntity, bool>>(outerExpression, parameterExpression));
+
+            return appliedCustomMethods.Aggregate(result, (current, appliedCustomMethod) => current.Concat(appliedCustomMethod));
         }
 
         private static Expression GetExpression(TFilterTerm filterTerm, dynamic filterValue, dynamic propertyValue)
