@@ -232,12 +232,17 @@ namespace Sieve.Services
                     }
                     else
                     {
-                        appliedCustomMethods.Add(ApplyCustomMethod(result, filterTermName, _customFilterMethods, 
-                            new object[] {
-                                            result,
-                                            filterTerm.Operator,
-                                            filterTerm.Values
-                            }, dataForCustomMethods));
+                        var customMethodResult = ApplyCustomMethod(result, filterTermName, _customFilterMethods,
+                            new object[] {result, filterTerm.Operator, filterTerm.Values}, dataForCustomMethods);
+                        if (filterTerm.Names.Length > 1)
+                        {
+                            appliedCustomMethods.Add(customMethodResult);
+                        }
+                        else
+                        {
+                            result = customMethodResult;
+                        }
+                        
                     }
                 }
                 if (outerExpression == null)
